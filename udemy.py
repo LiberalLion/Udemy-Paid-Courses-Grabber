@@ -29,12 +29,11 @@ func_list = [
 ]
 
 def cookiejar(client_id, access_token):
-    cookies = dict(client_id=client_id, access_token=access_token)
-    return cookies
+    return dict(client_id=client_id, access_token=access_token)
 
 def getRealUrl(url):
     path = url.split(".com/")[1]
-    return "https://www.udemy.com/" + path
+    return f"https://www.udemy.com/{path}"
 
 def get_course_id(url, cookies):
     global purchased_text
@@ -76,9 +75,19 @@ def free_checkout(CHECKOUT, access_token, csrftoken, coupon, courseID, cookies, 
 
 def free_enroll(courseID, access_token, cookies, csrftoken, head):
 
-    r = requests.get('https://www.udemy.com/course/subscribe/?courseId=' + str(courseID), headers=head, verify=False, cookies=cookies)
-    
-    r2 = requests.get('https://www.udemy.com/api-2.0/users/me/subscribed-courses/' + str(courseID) + '/?fields%5Bcourse%5D=%40default%2Cbuyable_object_type%2Cprimary_subcategory%2Cis_private', headers=head, verify=False, cookies=cookies)
+    r = requests.get(
+        f'https://www.udemy.com/course/subscribe/?courseId={str(courseID)}',
+        headers=head,
+        verify=False,
+        cookies=cookies,
+    )
+
+    r2 = requests.get(
+        f'https://www.udemy.com/api-2.0/users/me/subscribed-courses/{str(courseID)}/?fields%5Bcourse%5D=%40default%2Cbuyable_object_type%2Cprimary_subcategory%2Cis_private',
+        headers=head,
+        verify=False,
+        cookies=cookies,
+    )
     return r2.json()
 
 def auto_add(list_st, cookies, access_token, csrftoken, head):
@@ -101,22 +110,22 @@ def auto_add(list_st, cookies, access_token, csrftoken, head):
 
                 try:
                     if js['status'] == 'succeeded':
-                        print(fg + ' Successfully Enrolled To Course')
+                        print(f'{fg} Successfully Enrolled To Course')
                         count += 1
                         index += 1
                 except:
                     try:
                         msg = js['detail']
-                        print(' ' + fr + msg)
+                        print(f' {fr}{msg}')
                         slp = int(re.search(r'\d+', msg).group(0))
-                        # index -= 1
+                                            # index -= 1
                     except:
-                        print(fr + ' Expired Coupon ' + js['message'])
+                        print(f'{fr} Expired Coupon ' + js['message'])
                         index += 1
                 else:
                     try:
                         if js['status'] == 'failed':
-                            print(fr + ' Coupon Expired :( ')
+                            print(f'{fr} Coupon Expired :( ')
                             index += 1
                     except:
                         bnn = ''
@@ -134,17 +143,17 @@ def auto_add(list_st, cookies, access_token, csrftoken, head):
                 js = free_enroll(course_id, access_token, cookies, csrftoken, head)
                 try:
                     if js['_class'] == 'course':
-                        print(fg + ' Successfully Subscribed')
+                        print(f'{fg} Successfully Subscribed')
                         count += 1
                         index += 1
                 except:
-                    print(fb + ' COUPON MIGHT HAVE EXPIRED')
+                    print(f'{fb} COUPON MIGHT HAVE EXPIRED')
                     index += 1
             else:
-                print(fg + ' This is a Free Course (Skipped)')
+                print(f'{fg} This is a Free Course (Skipped)')
                 index += 1
         else:
-            print(' ' + fc + purchased_text)
+            print(f' {fc}{purchased_text}')
             index += 1
     print('\n' + fc + sd + '[' + fm + sb + '*' + fc + sd + '] ' + bc + fw + sb + 'Total Courses Subscribed: ' + str(count))
 
@@ -218,7 +227,7 @@ def main():
         dest='cookies',\
         type=str,\
         help="Cookies to authenticate",metavar='')
-    
+
     authentication.add_argument(
         '-k', '--cron',\
         dest='cron',\
@@ -230,17 +239,13 @@ def main():
         dest='paid',\
         action='store_true',\
         help="Enrol to only paid courses")
-    
+
     try:
         args = parser.parse_args()
         ip = ".".join(map(str, (random.randint(0, 255) 
                                 for _ in range(4))))
         global paid_only
-        if args.paid:
-            paid_only = True
-        else:
-            paid_only = False
-        
+        paid_only = bool(args.paid)
         if args.cookies:
             print('\n' + fc + sd + '[' + fm + sb + '*' + fc + sd + '] ' + fg +'Trying to login with cookies! \n')
             time.sleep(0.8)
@@ -253,24 +258,24 @@ def main():
                     client_id = fp_toks[1]
                     print(fc + sd + '[' + fm + sb + '*' + fc + sd + '] ' + fg +'Login Successful! \n')
                 except Exception as z:
-                    print(fr + 'cookie file is not in right format')
+                    print(f'{fr}cookie file is not in right format')
                     exit()
-                
+
                 csrftoken = ''
                 cookies = cookiejar(client_id, access_token)
                 head = {
-                    'authorization': 'Bearer ' + access_token,
+                    'authorization': f'Bearer {access_token}',
                     'accept': 'application/json, text/plain, */*',
                     'x-requested-with': 'XMLHttpRequest',
                     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36',
-                    'x-forwarded-for': str(ip),
-                    'x-udemy-authorization': 'Bearer ' + access_token,
+                    'x-forwarded-for': ip,
+                    'x-udemy-authorization': f'Bearer {access_token}',
                     'content-type': 'application/json;charset=UTF-8',
                     'referer': 'https://www.udemy.com/courses/search/?q=free%20courses&src=sac&kw=free',
-                    'origin': 'https://www.udemy.com'
+                    'origin': 'https://www.udemy.com',
                 }
             else:
-                print(fr + 'Cookie file does not exists')
+                print(f'{fr}Cookie file does not exists')
                 exit()
         else:
             my_cookies, cookies = fetch_cookies()
@@ -279,15 +284,15 @@ def main():
                 csrftoken = my_cookies['csrftoken']
 
                 head = {
-                    'authorization': 'Bearer ' + access_token,
+                    'authorization': f'Bearer {access_token}',
                     'accept': 'application/json, text/plain, */*',
                     'x-requested-with': 'XMLHttpRequest',
                     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36',
-                    'x-forwarded-for': str(ip),
-                    'x-udemy-authorization': 'Bearer ' + access_token,
+                    'x-forwarded-for': ip,
+                    'x-udemy-authorization': f'Bearer {access_token}',
                     'content-type': 'application/json;charset=UTF-8',
                     'origin': 'https://www.udemy.com',
-                    'referer': 'https://www.udemy.com/'
+                    'referer': 'https://www.udemy.com/',
                 }
                 print('\n' + fc + sd + '[' + fm + sb + '*' + fc + sd + '] ' + fg +'Auto Login Successful! \n')
 
@@ -302,7 +307,7 @@ def main():
             colors = [codes[color] for color in codes if color not in bad_colors]
             for site in total_sites:
                 print(random.choice(colors) + site)
-            
+
             try:
                 if args.cron:
                     input_1 = 'y'

@@ -33,7 +33,7 @@ def learnviral(page):
 
     for index, lk in enumerate(links):
         title = title_all[index].text
-        links_ls.append(title + '||' + lk.a['href'])
+        links_ls.append(f'{title}||' + lk.a['href'])
     return links_ls
 
 def real_disc(page):
@@ -59,7 +59,12 @@ def real_disc(page):
             r2 = requests.get(url=url2, headers=head, verify=False)
             soup1 = BeautifulSoup(r2.content, 'html.parser')
             title = soup1.find('title').text.replace(' Udemy Coupon - Real Discount', '')
-            links_ls.append(title + '||' + soup1.find('div', class_ = 'col-sm-6 col-xs-6 letshover').a['href'])
+            links_ls.append(
+                f'{title}||'
+                + soup1.find('div', class_='col-sm-6 col-xs-6 letshover').a[
+                    'href'
+                ]
+            )
     return links_ls
 
 def udemy_freebies(page):
@@ -82,7 +87,7 @@ def udemy_freebies(page):
         soup1 = BeautifulSoup(r2.content, 'html.parser')
         url3 = soup1.find('a', class_ = 'button-icon')['href']
         link = requests.get(url3, verify=False).url
-        links_ls.append(title + '||' + link)
+        links_ls.append(f'{title}||{link}')
     return links_ls
 
 def udemy_coupons_me(page):
@@ -106,7 +111,7 @@ def udemy_coupons_me(page):
         soup1 = BeautifulSoup(r2.content, 'html.parser')
         try:
             ll = soup1.find('span', class_ = 'td_text_highlight_marker_green td_text_highlight_marker').a['href']
-            links_ls.append(title + '||' + ll)
+            links_ls.append(f'{title}||{ll}')
         except:
             ll = ''
     return links_ls
@@ -137,7 +142,7 @@ def discudemy(page):
             sys.stdout.write("\rLOADING URLS: " + animation[index % len(animation)])
             sys.stdout.flush()
             soup3 = BeautifulSoup(r3.content, 'html.parser')
-            links_ls.append(title + '||' + soup3.find('div', 'ui segment').a['href'])
+            links_ls.append(f'{title}||' + soup3.find('div', 'ui segment').a['href'])
     return links_ls
 
 ########### NEW WEBSITES #############
@@ -159,7 +164,7 @@ def tricksinfo(page):
         sys.stdout.flush()
         soup1 = BeautifulSoup(r2.content, 'html.parser')
         link = soup1.find('div', 'wp-block-button').a['href']
-        links_ls.append(title + '||' + link)
+        links_ls.append(f'{title}||{link}')
     return links_ls
 
 def freewebcart(page):
@@ -180,7 +185,7 @@ def freewebcart(page):
         sys.stdout.flush()
         soup1 = BeautifulSoup(r2.content, 'html.parser')
         link = soup1.find('a', class_ = 'btn btn-default btn-lg')['href']
-        links_ls.append(title + '||' + link)
+        links_ls.append(f'{title}||{link}')
     return links_ls
 
 def course_mania(page):
@@ -197,7 +202,7 @@ def course_mania(page):
     for items in js:
         title = items['courseName']
         link = items['url']
-        links_ls.append(title + '||' + link)
+        links_ls.append(f'{title}||{link}')
     return links_ls
 
 def helpcovid(page):
@@ -212,7 +217,7 @@ def helpcovid(page):
     for items in js['courses']:
         title = items['title']
         link = items['url']
-        links_ls.append(title + '||' + link)
+        links_ls.append(f'{title}||{link}')
     return links_ls
 
 def jojocoupons(page):
@@ -235,12 +240,15 @@ def jojocoupons(page):
         link = soup1.find('div', class_ = 'rh-post-wrapper')
         for tag in soup1.find_all('a'):
             try:
-                if urlparse(tag['href']).netloc == 'www.udemy.com' or urlparse(tag['href']).netloc == 'udemy.com':
+                if urlparse(tag['href']).netloc in [
+                    'www.udemy.com',
+                    'udemy.com',
+                ]:
                     # print(tag['href'])
-                    links_ls.append(title + '||' + tag['href'])
+                    links_ls.append(f'{title}||' + tag['href'])
                     break
             except:
-                r = ''           
+                r = ''
     return links_ls
 
 def onlinetutorials(page):
@@ -261,7 +269,7 @@ def onlinetutorials(page):
         sys.stdout.flush()
         soup1 = BeautifulSoup(r2.content, 'html.parser')
         link = soup1.find('div', class_ = 'link-holder').a['href']
-        links_ls.append(title + '||' + link)
+        links_ls.append(f'{title}||{link}')
     return links_ls
 
 # print(onlinetutorials(1))
